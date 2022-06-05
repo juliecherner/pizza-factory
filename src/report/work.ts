@@ -8,10 +8,10 @@ import { wait } from "./describers";
 import { Pizza } from "../types";
 
 const doughChefWork = async (array: Pizza[]) => {
-  const promises = [];
+  let promises = [];
 
   for (let i = 0; i < 2; i++) {
-    promises.push(doughChefDescriber(array));
+    promises.push(doughChefDescriber(i.toString(), array));
     await wait(50);
     console.log(array);
   }
@@ -19,12 +19,11 @@ const doughChefWork = async (array: Pizza[]) => {
 };
 
 const toppingChefWork = async (array: Pizza[]) => {
-  const promises = [];
+  let promises = [];
 
   for (let i = 0; i < 4; i++) {
     promises.push(toppingChefDescriber(array));
     await wait(50);
-    console.log(array);
   }
 
   await Promise.all(promises);
@@ -36,7 +35,7 @@ const ovenWork = async (array: Pizza[]) => {
 };
 
 const waiterWork = async (array: Pizza[]) => {
-  const promises = [];
+  let promises = [];
 
   for (let i = 0; i < 2; i++) {
     promises.push(waiterDescriber(array));
@@ -47,8 +46,12 @@ const waiterWork = async (array: Pizza[]) => {
 };
 
 export const work = async (array: Pizza[]) => {
-  await doughChefWork(array);
-  await toppingChefWork(array);
-  await ovenWork(array);
-  await waiterWork(array);
+  let promises = [
+    doughChefWork(array),
+    //toppingChefWork(array),
+    //ovenWork(array),
+    //waiterWork(array),
+  ];
+
+  await Promise.all(promises);
 };

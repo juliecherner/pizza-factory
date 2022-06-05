@@ -4,20 +4,22 @@ import { Pizza, PizzaInitial } from "./types";
 
 const pizzaOrder: PizzaInitial[] = [
   {
+    id: 1,
     toppings: ["i", "n", "n"],
   },
   {
+    id: 2,
     toppings: ["i", "o", "n", "n", "o"],
   },
-  { toppings: ["n"] },
+  { id: 3, toppings: ["n"] },
 ];
 
 let pizzaWithStatus: Pizza[] = pizzaOrder.map(
   (pizza: Pizza | PizzaInitial) =>
-    (pizza = { ...pizza, status: 0, timestamps: [Date.now()], periods: [0] })
+    (pizza = { ...pizza, status: 0, timestamps: [Date.now()], seconds: 0 })
 );
 
-console.log(`Pizza with status`, pizzaWithStatus);
+console.log(`init state`, pizzaWithStatus);
 
 // const steps = {
 //   0: { text: "order accepted and waiting for chef 1" },
@@ -33,7 +35,7 @@ console.log(`Pizza with status`, pizzaWithStatus);
 
 const main = async () => {
   await work(pizzaWithStatus);
-  console.log(pizzaWithStatus);
+  console.log("main func", pizzaWithStatus);
 };
 
 main();
