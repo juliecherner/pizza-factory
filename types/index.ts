@@ -5,4 +5,4 @@ export type Pizza = {
   time: number;
 };
 
-export type PizzaInitial = Pick<Pizza, "toppings">;
+export type PizzaInitial = Pick<Pizza, 'toppings'>;

@@ -1,17 +1,17 @@
-import { work } from "./report/work";
-import { Pizza, PizzaInitial } from "./types";
+import { work } from './work';
+import { Pizza, PizzaInitial } from '../types/index';
 
 const pizzaOrder: PizzaInitial[] = [
   {
-    toppings: ["i", "n", "n"],
+    toppings: ['i', 'n', 'n'],
   },
-  { toppings: ["n"] },
-  { toppings: ["n", "n", "n"] },
+  { toppings: ['n'] },
+  { toppings: ['n', 'n', 'n'] },
 ];
 
-let pizzaWithStatus: Pizza[] = pizzaOrder.map(
+const pizzaWithStatus: Pizza[] = pizzaOrder.map(
   (pizza: Pizza | PizzaInitial) =>
-    (pizza = { ...pizza, status: 0, time: Date.now() })
+    (pizza = { ...pizza, status: 0, time: Date.now() }),
 );
 
 const getReport = (pizzaWithStatus: Pizza[]) => {
