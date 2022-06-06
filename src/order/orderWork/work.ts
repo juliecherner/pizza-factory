@@ -5,7 +5,7 @@ import {
   waiterDescriber,
 } from './describers';
 import { wait } from './describers';
-import { Pizza } from '../types';
+import { Pizza } from '../../../types';
 
 const workersAmount = {
   dough: 2,

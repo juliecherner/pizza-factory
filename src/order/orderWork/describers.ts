@@ -1,4 +1,4 @@
-import { Pizza } from '../types';
+import { Pizza } from '../../../types';
 
 const process = {
   gotOrder: { stage: 0 },
