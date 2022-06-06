@@ -1,12 +1,8 @@
 export type Pizza = {
-  id: number;
+  id?: number;
   status: number;
   toppings: string[];
-  timestamps: number[];
-  seconds: number;
+  time: number;
 };
 
-export type PizzaInitial = {
-  id: number;
-  toppings: string[];
-};
+export type PizzaInitial = Pick<Pizza, "toppings">;
