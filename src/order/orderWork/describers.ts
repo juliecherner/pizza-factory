@@ -20,7 +20,7 @@ export const wait = (time: number) => {
 
 const toppingsTotalTime = (toppingsArray: string[]) => {
   const totalTime =
-    (toppingsArray.length / process.atToppingChef.toppingsAtSameTime) *
+    Math.ceil(toppingsArray.length / process.atToppingChef.toppingsAtSameTime) *
     process.atToppingChef.time;
   return totalTime;
 };

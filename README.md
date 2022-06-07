@@ -1,73 +1,100 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Pizza Kitchen Project
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Problem
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Task: organize pizza production for the restaurant
+Aims:
 
-## Description
+- log report which includes total time of order execution and total time for each pizza
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- log start and end time for each process
 
-## Installation
+Process flow: dough chef -> topping chef -> oven -> waiter
 
-```bash
-$ npm install
+Stations of production: dough chef (2), topping chef(3), oven(1), waiter (2)
+Amount of time for each station: dough chef (7 seconds), topping chef (4 seconds - includes 2 toppings, finishes the pizza he started), oven (10 seconds), waiter (5 seconds),
+
+Condition: all processes should run at the same time
+
+Decision: running processes in parallel by mutating it and adding new qualities to initial order (for calculations and logs)
+
+- defining 8 stages that 1 pizza passes before being served and adding time (milliseconds).
+
+```ts
+const process = {
+  gotOrder: { stage: 0 },
+  atDoughChef: { stage: 1, time: 7000 },
+  waitingForToppingChef: { stage: 2 },
+  atToppingChef: { stage: 3, time: 4000, toppingsAtSameTime: 2 },
+  waitingForOven: { stage: 4 },
+  inOven: { stage: 5, time: 10000 },
+  waitingForWaiter: { stage: 6 },
+  atWaiter: { stage: 7, time: 5000 },
+  end: { stage: 8 },
+};
 ```
 
-## Running the app
+- creating describers that describe the logic how each station functionate
+
+- creating workers for each station considering their amounts and awaiting them with Promise.all
+
+- getting total execution time for order and each pizza in it and taking only nessesary data for final processed order (report format)
+
+## Technologies
+
+- Typescript
+- Nest.js
+
+## Expected outputs example in console
+
+Logged final report
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+order report is logged {
+  id: 1654605262757,
+  totalTime: 54,
+  pizzas: [
+    { totalTime: 34, toppings: [Array] },
+    { totalTime: 24, toppings: [Array] },
+    { totalTime: 44, toppings: [Array] },
+    { totalTime: 54, toppings: [Array] }
+  ]
+}
 ```
 
-## Test
+Logged start and end time for each process
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+pizza 0 | waiting for dough chef | start: 3:34:22 PM, end: 3:34:22 PM, total time: 0
+pizza 1 | waiting for dough chef | start: 3:34:22 PM, end: 3:34:22 PM, total time: 0
+pizza 0 | dough is ready | start: 3:34:22 PM, end: 3:34:29 PM, total time: 7
+pizza 2 | waiting for dough chef | start: 3:34:22 PM, end: 3:34:29 PM, total time: 7
+pizza 0 | waiting for topping chef | start: 3:34:29 PM, end: 3:34:29 PM, total time: 0
+pizza 1 | dough is ready | start: 3:34:22 PM, end: 3:34:29 PM, total time: 7
+pizza 3 | waiting for dough chef | start: 3:34:22 PM, end: 3:34:29 PM, total time: 7
+pizza 1 | waiting for topping chef | start: 3:34:29 PM, end: 3:34:29 PM, total time: 0
+pizza 1 | toppings are added | start: 3:34:29 PM, end: 3:34:31 PM, total time: 2
+pizza 1 | waiting for oven | start: 3:34:31 PM, end: 3:34:31 PM, total time: 0
+pizza 0 | toppings are added | start: 3:34:29 PM, end: 3:34:35 PM, total time: 6
+pizza 2 | dough is ready | start: 3:34:29 PM, end: 3:34:36 PM, total time: 7
+pizza 2 | waiting for topping chef | start: 3:34:36 PM, end: 3:34:36 PM, total time: 0
+pizza 3 | dough is ready | start: 3:34:29 PM, end: 3:34:36 PM, total time: 7
+pizza 3 | waiting for topping chef | start: 3:34:36 PM, end: 3:34:36 PM, total time: 0
+pizza 1 | pizza is baked | start: 3:34:31 PM, end: 3:34:41 PM, total time: 10
+pizza 0 | waiting for oven | start: 3:34:35 PM, end: 3:34:41 PM, total time: 6
+pizza 1 | waiting for waiter | start: 3:34:41 PM, end: 3:34:41 PM, total time: 0
+pizza 2 | toppings are added | start: 3:34:36 PM, end: 3:34:42 PM, total time: 6
+pizza 3 | toppings are added | start: 3:34:36 PM, end: 3:34:42 PM, total time: 6
+pizza 1 | pizza is served | start: 3:34:41 PM, end: 3:34:46 PM, total time: 5
+pizza 0 | pizza is baked | start: 3:34:41 PM, end: 3:34:51 PM, total time: 10
+pizza 2 | waiting for oven | start: 3:34:42 PM, end: 3:34:51 PM, total time: 9
+pizza 0 | waiting for waiter | start: 3:34:51 PM, end: 3:34:51 PM, total time: 0
+pizza 0 | pizza is served | start: 3:34:51 PM, end: 3:34:56 PM, total time: 5
+pizza 2 | pizza is baked | start: 3:34:51 PM, end: 3:35:01 PM, total time: 10
+pizza 3 | waiting for oven | start: 3:34:42 PM, end: 3:35:01 PM, total time: 19
+pizza 2 | waiting for waiter | start: 3:35:01 PM, end: 3:35:01 PM, total time: 0
+pizza 2 | pizza is served | start: 3:35:01 PM, end: 3:35:06 PM, total time: 5
+pizza 3 | pizza is baked | start: 3:35:01 PM, end: 3:35:11 PM, total time: 10
+pizza 3 | waiting for waiter | start: 3:35:11 PM, end: 3:35:11 PM, total time: 0
+pizza 3 | pizza is served | start: 3:35:11 PM, end: 3:35:16 PM, total time: 5
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).

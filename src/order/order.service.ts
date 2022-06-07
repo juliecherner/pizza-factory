@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Order } from './order.model';
 import { Topping } from './order.model';
 import { startOrder } from './orderWork/index';
@@ -10,6 +10,11 @@ export class OrderService {
   async addOrder(toppings: Topping[]) {
     const readyOrder = await startOrder(toppings);
     this.orders.push(readyOrder);
+
+    if (!readyOrder) {
+      throw new NotFoundException('The order is not created');
+    }
+
     return readyOrder;
   }
 
@@ -19,6 +24,11 @@ export class OrderService {
 
   getOne(orderId: string) {
     const order = this.orders.find((pizza) => pizza.id === parseInt(orderId));
+
+    if (!order) {
+      throw new NotFoundException(`The order with ${orderId} is not found`);
+    }
+
     return { ...order };
   }
 }
