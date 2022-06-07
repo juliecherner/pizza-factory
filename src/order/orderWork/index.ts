@@ -33,7 +33,7 @@ const getOrderReport = (order: OrderInWork): Order => {
     pizza.time = Math.round(pizzaTime);
     timeArray.push(pizza.time);
     orderReport.pizzas.push({
-      totalTime: pizza.time,
+      time: pizza.time,
       toppings: pizza.toppings,
     });
   }

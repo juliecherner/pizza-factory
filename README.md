@@ -34,7 +34,7 @@ const process = {
 };
 ```
 
-- creating describers that describe the logic how each station functionate
+- creating describers that describe the logic how each station functionates
 
 - creating workers for each station considering their amounts and awaiting them with Promise.all
 
@@ -44,6 +44,7 @@ const process = {
 
 - Typescript
 - Nest.js
+- Jest
 
 ## Expected outputs example in console
 
