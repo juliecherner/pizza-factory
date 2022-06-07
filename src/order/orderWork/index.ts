@@ -1,32 +1,51 @@
 import { work } from './work';
-import { Order, Pizza } from '../order.model';
+import { Topping, Order } from '../order.model';
+import { OrderInWork } from './workTypes';
 
-import { Topping } from '../order.model';
-
-export const setOrder = (toppingArray: Topping[]) => {
+export const setOrder = (toppingArray: Topping[]): OrderInWork => {
   const id = Date.now();
   const startTime = Date.now();
   const pizzaId = Date.now();
   const pizzas = toppingArray.map((pizza) => ({
     id: pizzaId,
     status: 0,
-    time: startTime,
+    time: 0,
+    timestamps: [startTime],
     ...pizza,
   }));
 
-  return { id: id, totalTime: startTime, pizzas };
+  return { id: id, totalTime: 0, pizzas };
 };
 
-const findOrderTime = (pizzas: Pizza[]) => {
-  const timeArray = pizzas.map((pizza) => pizza.time);
-  return Math.max(...timeArray);
+const getOrderReport = (order: OrderInWork): Order => {
+  const timeArray = [];
+
+  const orderReport = {
+    id: order.id,
+    totalTime: 0,
+    pizzas: [],
+  };
+
+  for (const pizza of order.pizzas) {
+    const timestamps = pizza.timestamps;
+    const pizzaTime =
+      (timestamps[timestamps.length - 1] - timestamps[0]) / 1000;
+    pizza.time = Math.round(pizzaTime);
+    timeArray.push(pizza.time);
+    orderReport.pizzas.push({
+      totalTime: pizza.time,
+      toppings: pizza.toppings,
+    });
+  }
+
+  orderReport.totalTime = Math.round(Math.max(...timeArray));
+
+  return orderReport;
 };
 
-export const startOrder = async (toppingArray: Topping[]) => {
+export const startOrder = async (toppingArray: Topping[]): Promise<Order> => {
   const order = setOrder(toppingArray);
   await work(order.pizzas);
-  const orderTime = findOrderTime(order.pizzas);
-  order.totalTime = orderTime;
 
-  return order;
+  return getOrderReport(order);
 };

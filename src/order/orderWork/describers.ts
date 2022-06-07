@@ -1,4 +1,4 @@
-import { Pizza } from '../../../types';
+import { PizzaInWork } from './workTypes';
 
 const process = {
   gotOrder: { stage: 0 },
@@ -25,39 +25,72 @@ const toppingsTotalTime = (toppingsArray: string[]) => {
   return totalTime;
 };
 
-export const pizzaByStatus = (array: Pizza[], status: number) => {
+export const pizzaByStatus = (array: PizzaInWork[], status: number) => {
   const foundPizza = array.find((pizza) => pizza.status === status);
   if (foundPizza) return foundPizza;
 };
 
-const ifExistPizzasForDescriber = (array: Pizza[], status: number) => {
+const ifExistPizzasForDescriber = (array: PizzaInWork[], status: number) => {
   const pizzas = array.filter((pizza) => pizza.status <= status);
   return pizzas.length > 0 ? true : false;
 };
 
-const trackTime = (pizza: Pizza) => {
-  const seconds = Math.round((Date.now() - pizza.time) / 1000);
-  pizza.time = seconds;
+const trackTime = (pizza: PizzaInWork) => {
+  const lastIndex = pizza.timestamps.length - 1;
+  pizza.time = Math.round((Date.now() - pizza.timestamps[lastIndex]) / 1000);
+  pizza.timestamps = [...pizza.timestamps, Date.now()];
 };
 
-export const doughChefDescriber = async (array: Pizza[]) => {
+const getStartEndTime = (pizza: PizzaInWork) => {
+  const lastIndex = pizza.timestamps.length - 1;
+  const startTime = pizza.timestamps[lastIndex - 1];
+  const endTime = pizza.timestamps[lastIndex];
+  return `start: ${convertTimeStampToTime(
+    startTime,
+  )}, end: ${convertTimeStampToTime(endTime)}, total time: ${pizza.time}`;
+};
+
+const convertTimeStampToTime = (timestamp: number) => {
+  const time = new Date(timestamp).toLocaleTimeString('en-US');
+  return time;
+};
+
+const logProcesses = (
+  stageName: string,
+  array: PizzaInWork[],
+  pizza: PizzaInWork,
+) => {
+  console.log(
+    `pizza ${array.indexOf(pizza)} | ${stageName} | ${getStartEndTime(pizza)}`,
+  );
+};
+
+export const doughChefDescriber = async (array: PizzaInWork[]) => {
   while (ifExistPizzasForDescriber(array, 0)) {
     const pizza = pizzaByStatus(array, 0);
     if (pizza !== undefined) {
       pizza.status = process.atDoughChef.stage;
+      trackTime(pizza);
+      logProcesses('waiting for dough chef', array, pizza);
       await wait(process.atDoughChef.time);
       pizza.status = process.waitingForToppingChef.stage;
+      trackTime(pizza);
+      logProcesses('dough is ready', array, pizza);
     }
   }
 };
 
-export const toppingChefDescriber = async (array: Pizza[]) => {
+export const toppingChefDescriber = async (array: PizzaInWork[]) => {
   while (ifExistPizzasForDescriber(array, 2)) {
     const pizza = pizzaByStatus(array, 2);
     if (pizza !== undefined) {
       pizza.status = process.atToppingChef.stage;
+      trackTime(pizza);
+      logProcesses('waiting for topping chef', array, pizza);
       await wait(toppingsTotalTime(pizza.toppings));
       pizza.status = process.waitingForOven.stage;
+      trackTime(pizza);
+      logProcesses('toppings are added', array, pizza);
     } else {
       await wait(50);
       await toppingChefDescriber(array);
@@ -65,13 +98,17 @@ export const toppingChefDescriber = async (array: Pizza[]) => {
   }
 };
 
-export const ovenDecriber = async (array: Pizza[]) => {
+export const ovenDecriber = async (array: PizzaInWork[]) => {
   while (ifExistPizzasForDescriber(array, 4)) {
     const pizza = pizzaByStatus(array, 4);
     if (pizza !== undefined) {
       pizza.status = process.inOven.stage;
+      trackTime(pizza);
+      logProcesses('waiting for oven', array, pizza);
       await wait(process.inOven.time);
       pizza.status = process.waitingForWaiter.stage;
+      trackTime(pizza);
+      logProcesses('pizza is baked', array, pizza);
     } else {
       await wait(50);
       await ovenDecriber(array);
@@ -79,14 +116,17 @@ export const ovenDecriber = async (array: Pizza[]) => {
   }
 };
 
-export const waiterDescriber = async (array: Pizza[]) => {
+export const waiterDescriber = async (array: PizzaInWork[]) => {
   while (ifExistPizzasForDescriber(array, 6)) {
     const pizza = pizzaByStatus(array, 6);
     if (pizza !== undefined) {
       pizza.status = process.atWaiter.stage;
+      trackTime(pizza);
+      logProcesses('waiting for waiter', array, pizza);
       await wait(process.atWaiter.time);
       pizza.status = process.end.stage;
       trackTime(pizza);
+      logProcesses('pizza is served', array, pizza);
     } else {
       await wait(50);
       await waiterDescriber(array);
