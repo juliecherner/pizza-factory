@@ -1,34 +1,39 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Order } from './order.model';
-import { Topping } from './order.model';
+import { Order, Topping } from './order.model';
 import { startOrder } from './orderWork/index';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class OrderService {
-  private orders: Order[] = [];
+  private readonly orders = [];
 
-  async addOrder(toppings: Topping[]) {
-    const readyOrder = await startOrder(toppings);
-    this.orders.push(readyOrder);
+  constructor(
+    @InjectModel('Order') private readonly productModel: Model<Order>,
+  ) {}
 
-    if (!readyOrder) {
+  async addOrder(toppings: Topping[]): Promise<Order> {
+    const processedOrder = await startOrder(toppings);
+    const newOrder = new this.productModel(processedOrder).save();
+
+    if (!newOrder) {
       throw new NotFoundException('The order is not created');
     }
 
-    return readyOrder;
+    return newOrder;
   }
 
-  getAll() {
-    return [...this.orders];
+  async getAll(): Promise<Order[]> {
+    const allOrders = await this.productModel.find().exec();
+    return allOrders;
   }
 
   getOne(orderId: string) {
-    const order = this.orders.find((pizza) => pizza.id === parseInt(orderId));
+    const order = this.productModel.findById(orderId);
 
     if (!order) {
       throw new NotFoundException(`The order with ${orderId} is not found`);
     }
-
-    return { ...order };
+    return order;
   }
 }

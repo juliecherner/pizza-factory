@@ -6,7 +6,6 @@ export interface PizzaInWork extends Pizza {
 }
 
 export type OrderInWork = {
-  id: number;
   totalTime: number;
   pizzas: PizzaInWork[];
 };

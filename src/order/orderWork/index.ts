@@ -3,25 +3,21 @@ import { Topping, Order } from '../order.model';
 import { OrderInWork } from './workTypes';
 
 export const setOrder = (toppingArray: Topping[]): OrderInWork => {
-  const id = Date.now();
   const startTime = Date.now();
-  const pizzaId = Date.now();
   const pizzas = toppingArray.map((pizza) => ({
-    id: pizzaId,
     status: 0,
     time: 0,
     timestamps: [startTime],
     ...pizza,
   }));
 
-  return { id: id, totalTime: 0, pizzas };
+  return { totalTime: 0, pizzas };
 };
 
 const getOrderReport = (order: OrderInWork): Order => {
   const timeArray = [];
 
   const orderReport = {
-    id: order.id,
     totalTime: 0,
     pizzas: [],
   };

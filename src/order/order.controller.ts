@@ -14,12 +14,12 @@ export class OrderController {
   }
 
   @Get()
-  getAll(): Order[] {
-    return this.orderService.getAll();
+  async getAll(): Promise<Order[]> {
+    return await this.orderService.getAll();
   }
 
   @Get(':id')
-  getOne(@Param('id') orderId: string): Order {
-    return this.orderService.getOne(orderId);
+  async getOne(@Param('id') orderId: string): Promise<Order> {
+    return await this.orderService.getOne(orderId);
   }
 }
