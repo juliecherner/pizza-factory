@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrderModule } from './order/order.modules';
 import { MongooseModule } from '@nestjs/mongoose';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './httpExeptionFilter/index';
 
 @Module({
   imports: [
@@ -12,6 +14,12 @@ import { MongooseModule } from '@nestjs/mongoose';
     OrderModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

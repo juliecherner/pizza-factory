@@ -1,8 +1,10 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseFilters } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Topping, Order } from './order.model';
+import { HttpExceptionFilter } from '../httpExeptionFilter/index';
 
 @Controller('order')
+@UseFilters(new HttpExceptionFilter())
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
