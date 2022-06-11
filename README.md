@@ -16,7 +16,7 @@ Amount of time for each station: dough chef (7 seconds), topping chef (4 seconds
 
 Condition: all processes should run at the same time
 
-Decision: running processes in parallel by mutating it and adding new qualities to initial order (for calculations and logs)
+Decision: running processes in parallel by mutating the order and adding new qualities to initial order (for calculations and logs)
 
 - defining 8 stages that 1 pizza passes before being served and adding time (milliseconds).
 
@@ -45,6 +45,26 @@ const process = {
 - Typescript
 - Nest.js
 - Jest
+- MongoDB
+- Docker
+
+## Init
+
+```bash
+cp .env.default .env
+docker-compose up -d
+```
+
+## Input JSON example for POST request
+
+```bash
+[
+    { "toppings" : ["1", "2", "3"] },
+    { "toppings" : ["1"]},
+    { "toppings" : ["1", "2", "3"] },
+    { "toppings" : ["1", "2", "3"] }
+]
+```
 
 ## Expected outputs example in console
 
@@ -52,15 +72,33 @@ Logged final report
 
 ```bash
 order report is logged {
-  id: 1654605262757,
-  totalTime: 54,
+  totalTime: 56,
   pizzas: [
-    { totalTime: 34, toppings: [Array] },
-    { totalTime: 24, toppings: [Array] },
-    { totalTime: 44, toppings: [Array] },
-    { totalTime: 54, toppings: [Array] }
-  ]
+    {
+      toppings: [Array],
+      time: 36,
+      _id: new ObjectId("62a47f194a9a764424285126")
+    },
+    {
+      toppings: [Array],
+      time: 26,
+      _id: new ObjectId("62a47f194a9a764424285127")
+    },
+    {
+      toppings: [Array],
+      time: 46,
+      _id: new ObjectId("62a47f194a9a764424285128")
+    },
+    {
+      toppings: [Array],
+      time: 56,
+      _id: new ObjectId("62a47f194a9a764424285129")
+    }
+  ],
+  _id: new ObjectId("62a47f194a9a764424285125"),
+  __v: 0
 }
+
 ```
 
 Logged start and end time for each process

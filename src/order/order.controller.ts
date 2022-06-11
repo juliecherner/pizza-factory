@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Param, UseFilters } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Topping, Order } from './order.model';
-import { HttpExceptionFilter } from '../httpExeptionFilter/index';
+import { HttpExceptionFilter } from '../httpExceptionFilter/index';
 
 @Controller('order')
 @UseFilters(new HttpExceptionFilter())

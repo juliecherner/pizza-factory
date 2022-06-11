@@ -4,13 +4,13 @@ import { AppService } from './app.service';
 import { OrderModule } from './order/order.modules';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from './httpExeptionFilter/index';
+import { HttpExceptionFilter } from './httpExceptionFilter/index';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://db:1234@cluster0.qqvga.mongodb.net/pizzaOrders?retryWrites=true&w=majority',
-    ),
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGO_URL),
     OrderModule,
   ],
   controllers: [AppController],
